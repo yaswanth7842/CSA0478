@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+// Structure to represent a process
+struct Process {
+    int id;
+    int executionTime;
+};
+
+// Function to find the process with the smallest execution time
+int findSmallestExecutionTime(struct Process processes[], int n) {
+    int smallestIndex = 0;
+    int smallestTime = processes[0].executionTime;
+    
+    for (int i = 1; i < n; i++) {
+        if (processes[i].executionTime < smallestTime) {
+            smallestTime = processes[i].executionTime;
+            smallestIndex = i;
+        }
+    }
+    
+    return smallestIndex;
+}
+
+int main() {
+    int n; // Number of processes
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+    
+    struct Process processes[n];
+    
+    // Input process information
+    for (int i = 0; i < n; i++) {
+        processes[i].id = i + 1;
+        printf("Enter execution time for process P%d: ", i + 1);
+        scanf("%d", &processes[i].executionTime);
+    }
+    
+    // Schedule processes using FCFS
+    printf("\nFCFS Scheduling Order:\n");
+    int totalTime = 0;
+    
+    for (int i = 0; i < n; i++) {
+        int smallestIndex = findSmallestExecutionTime(processes, n);
+        struct Process currentProcess = processes[smallestIndex];
+        processes[smallestIndex].executionTime = 0; // Mark process as completed
+        totalTime += currentProcess.executionTime;
+        
+        printf("Executing P%d (Execution Time: %d) | Total Time: %d\n", currentProcess.id, currentProcess.executionTime, totalTime);
+    }
+    
+    return 0;
+}

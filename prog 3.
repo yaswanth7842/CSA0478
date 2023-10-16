@@ -1,0 +1,85 @@
+#include <stdio.h>
+
+// Structure to represent a process
+struct Process {
+    int process_id; // Process ID
+    int arrival_time; // Arrival time
+    int burst_time; // Burst time
+};
+
+// Function to find the waiting time for each process
+void findWaitingTime(struct Process processes[], int n, int waiting_time[]) {
+    waiting_time[0] = 0; // The first process doesn't wait
+
+    for (int i = 1; i < n; i++) {
+        waiting_time[i] = waiting_time[i - 1] + processes[i - 1].burst_time;
+    }
+}
+
+// Function to find the turnaround time for each process
+void findTurnaroundTime(struct Process processes[], int n, int waiting_time[], int turnaround_time[]) {
+    for (int i = 0; i < n; i++) {
+        turnaround_time[i] = waiting_time[i] + processes[i].burst_time;
+    }
+}
+
+// Function to calculate the average waiting time and average turnaround time
+void findAverageTime(struct Process processes[], int n) {
+    int waiting_time[n];
+    int turnaround_time[n];
+
+    // Calculate waiting time for each process
+    findWaitingTime(processes, n, waiting_time);
+
+    // Calculate turnaround time for each process
+    findTurnaroundTime(processes, n, waiting_time, turnaround_time);
+
+    // Calculate the total waiting time and total turnaround time
+    int total_waiting_time = 0, total_turnaround_time = 0;
+    for (int i = 0; i < n; i++) {
+        total_waiting_time += waiting_time[i];
+        total_turnaround_time += turnaround_time[i];
+    }
+
+    // Calculate and print the average waiting time and average turnaround time
+    double average_waiting_time = (double)total_waiting_time / n;
+    double average_turnaround_time = (double)total_turnaround_time / n;
+
+    printf("Average Waiting Time: %.2f\n", average_waiting_time);
+    printf("Average Turnaround Time: %.2f\n", average_turnaround_time);
+}
+
+int main() {
+    int n; // Number of processes
+
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    struct Process processes[n];
+
+    // Input process details
+    for (int i = 0; i < n; i++) {
+        printf("Enter arrival time for Process %d: ", i + 1);
+        scanf("%d", &processes[i].arrival_time);
+        printf("Enter burst time for Process %d: ", i + 1);
+        scanf("%d", &processes[i].burst_time);
+        processes[i].process_id = i + 1;
+    }
+
+    // Sort processes based on arrival time (FCFS)
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (processes[i].arrival_time > processes[j].arrival_time) {
+                // Swap the processes
+                struct Process temp = processes[i];
+                processes[i] = processes[j];
+                processes[j] = temp;
+            }
+        }
+    }
+
+    // Calculate and display the average waiting and turnaround time
+    findAverageTime(processes, n);
+
+    return 0;
+}

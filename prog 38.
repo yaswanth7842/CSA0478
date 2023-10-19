@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define size 8
+
+void SCAN(int arr[size], int head, char direction) {
+    int seek_count = 0;
+    int distance, cur_track;
+    int left = 0, right = 200 - 1;
+    int seek_sequence[size + 1];
+    int j = 0;
+
+    // Checking the direction
+    if (direction == 'l') {
+        for (int i = 0; i < size; i++) {
+            if (arr[i] < head) {
+                seek_sequence[j++] = arr[i];
+                left++;
+            }
+        }
+        seek_sequence[j++] = 0;
+        for (int i = size - 1; i >= 0; i--) {
+            if (arr[i] >= head) {
+                seek_sequence[j++] = arr[i];
+                right--;
+            }
+        }
+    } else if (direction == 'r') {
+        for (int i = 0; i < size; i++) {
+            if (arr[i] > head) {
+                seek_sequence[j++] = arr[i];
+                right--;
+            }
+        }
+        seek_sequence[j++] = 200 - 1;
+        for (int i = size - 1; i >= 0; i--) {
+            if (arr[i] <= head) {
+                seek_sequence[j++] = arr[i];
+                left++;
+            }
+        }
+    }
+
+    seek_count = abs(head - 0) + abs(200 - 1 - 0);
+
+    printf("Total number of seek operations = %d\n", seek_count);
+    printf("Seek Sequence is: ");
+
+    for (int i = 0; i < j; i++) {
+        printf("%d ", seek_sequence[i]);
+        if (i != j - 1) {
+            printf(" -> ");
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int arr[size] = { 176, 79, 34, 60, 92, 11, 41, 114 };
+    int head = 50;
+    char direction = 'l';
+    SCAN(arr, head, direction);
+    return 0;
+}

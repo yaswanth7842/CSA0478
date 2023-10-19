@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+int main() {
+    // Creating a file with specific permissions
+    FILE *file = fopen("example.txt", "w");
+    if (file == NULL) {
+        perror("Error creating file");
+        return -1;
+    }
+
+    // Setting specific permissions for the file
+    if (chmod("example.txt", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH) == -1) {
+        perror("Error setting permissions for the file");
+        return -1;
+    }
+
+    // Simulating different types of users accessing the file
+    if (access("example.txt", R_OK) == 0) {
+        printf("User has read permission\n");
+    }
+
+    if (access("example.txt", W_OK) == 0) {
+        printf("User has write permission\n");
+    }
+
+    if (access("example.txt", X_OK) == 0) {
+        printf("User has execute permission\n");
+    }
+
+    fclose(file);
+    return 0;
+}

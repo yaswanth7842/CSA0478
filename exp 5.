@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 5
+
+struct process {
+    int priority;
+    int burst_time;
+    int id;
+};
+
+struct process* createProcess(int id, int priority, int burst_time) {
+    struct process* p = (struct process*)malloc(sizeof(struct process));
+    p->id = id;
+    p->priority = priority;
+    p->burst_time = burst_time;
+    return p;
+}
+
+struct PriorityQueue {
+    int front, rear;
+    struct process* array[MAX];
+};
+
+struct PriorityQueue* createPriorityQueue() {
+    struct PriorityQueue* queue = (struct PriorityQueue*)malloc(sizeof(struct PriorityQueue));
+    queue->front = queue->rear = -1;
+    return queue;
+}
+
+int isEmpty(struct PriorityQueue* queue) {
+    return queue->front == -1;
+}
+
+int isFull(struct PriorityQueue* queue) {
+    return queue->rear == MAX - 1;
+}
+
+void enqueue(struct PriorityQueue* queue, struct process* p) {
+    if (isFull(queue)) {
+        printf("Queue is full.\n");
+        return;
+    }
+
+    if (isEmpty(queue)) {
+        queue->front = queue->rear = 0;
+        queue->array[queue->rear] = p;
+    } else {
+        int i;
+        for (i = queue->rear; i >= queue->front; i--) {
+            if (p->priority > queue->array[i]->priority) {
+                queue->array[i + 1] = queue->array[i];
+            } else {
+                break;
+            }
+        }
+        queue->array[i + 1] = p;
+        queue->rear++;
+    }
+}
+
+struct process* dequeue(struct PriorityQueue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty.\n");
+        return NULL;
+    }
+
+    struct process* p = queue->array[queue->front];
+    if (queue->front == queue->rear) {
+        queue->front = queue->rear = -1;
+    } else {
+        queue->front++;
+    }
+    return p;
+}
+
+int main() {
+    struct PriorityQueue* queue = createPriorityQueue();
+
+    // Adding processes to the queue
+    enqueue(queue, createProcess(1, 3, 10));
+    enqueue(queue, createProcess(2, 1, 5));
+    enqueue(queue, createProcess(3, 4, 8));
+
+    // Dequeue and execute the process with the highest priority
+    while (!isEmpty(queue)) {
+        struct process* p = dequeue(queue);
+        printf("Executing process %d with priority %d and burst time %d.\n", p->id, p->priority, p->burst_time);
+        free(p);
+    }
+
+    free(queue);
+    return 0;
+}

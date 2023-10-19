@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+#define MAX_FRAMES 3 // Number of frames in the memory
+
+int main() {
+    int pages[] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2}; // Reference string
+    int n = sizeof(pages) / sizeof(pages[0]); // Size of the reference string
+    int frames[MAX_FRAMES]; // Frames in memory
+    int pageFaults = 0; // Count of page faults
+    int m, temp, max, found, i, j;
+
+    // Initializing frames
+    for (i = 0; i < MAX_FRAMES; i++) {
+        frames[i] = -1;
+    }
+
+    // Loop through the reference string
+    for (i = 0; i < n; i++) {
+        found = 0;
+
+        // Check if the page is already in memory
+        for (j = 0; j < MAX_FRAMES; j++) {
+            if (frames[j] == pages[i]) {
+                found = 1;
+                break;
+            }
+        }
+
+        // If page is not in memory, then a page fault occurs
+        if (found == 0) {
+            // Find the page that will not be used for the longest period of time in the future
+            max = -1;
+            for (j = 0; j < MAX_FRAMES; j++) {
+                for (m = i + 1; m < n; m++) {
+                    if (frames[j] == pages[m]) {
+                        if (m > max) {
+                            max = m;
+                            temp = j;
+                        }
+                        break;
+                    }
+                }
+                if (m == n) {
+                    temp = j;
+                    break;
+                }
+            }
+
+            // Replace the page in memory
+            frames[temp] = pages[i];
+            pageFaults++;
+        }
+
+        // Display the current state of frames in memory
+        printf("After inserting %d: ", pages[i]);
+        for (j = 0; j < MAX_FRAMES; j++) {
+            if (frames[j] != -1) {
+                printf("%d ", frames[j]);
+            }
+        }
+        printf("\n");
+    }
+
+    printf("Total Page Faults: %d\n", pageFaults);
+
+    return 0;
+}

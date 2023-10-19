@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BLOCK_SIZE 512
+
+// Struct for a disk block
+typedef struct block {
+    char data[BLOCK_SIZE];
+    struct block *next;
+} Block;
+
+// Struct for a file
+typedef struct file {
+    Block *first_block;
+    Block *last_block;
+} File;
+
+// Function to create a new block
+Block* createBlock() {
+    Block* new_block = (Block*)malloc(sizeof(Block));
+    new_block->next = NULL;
+    return new_block;
+}
+
+// Function to create a new file
+File* createFile() {
+    File* new_file = (File*)malloc(sizeof(File));
+    new_file->first_block = NULL;
+    new_file->last_block = NULL;
+    return new_file;
+}
+
+// Function to add a block to a file
+void addBlockToFile(File* file, Block* block) {
+    if (file->first_block == NULL) {
+        file->first_block = block;
+        file->last_block = block;
+    } else {
+        file->last_block->next = block;
+        file->last_block = block;
+    }
+}
+
+// Function to print the content of a file
+void printFile(File* file) {
+    Block* current_block = file->first_block;
+    while (current_block != NULL) {
+        printf("%s", current_block->data);
+        current_block = current_block->next;
+    }
+}
+
+int main() {
+    File* file = createFile();
+
+    // Simulating writing data to the file
+    Block* block1 = createBlock();
+    sprintf(block1->data, "This is block 1\n");
+    addBlockToFile(file, block1);
+
+    Block* block2 = createBlock();
+    sprintf(block2->data, "This is block 2\n");
+    addBlockToFile(file, block2);
+
+    // Simulating reading data from the file
+    printFile(file);
+
+    // Freeing the allocated memory
+    free(block1);
+    free(block2);
+    free(file);
+
+    return 0;
+}

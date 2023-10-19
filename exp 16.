@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define FILENAME "employee_details.txt"
+#define MAX_EMPLOYEES 100
+
+struct Employee {
+    int id;
+    char name[50];
+    float salary;
+};
+
+void writeEmployeeToFile(struct Employee emp) {
+    FILE *file = fopen(FILENAME, "ab");
+    if (file == NULL) {
+        printf("Error in opening file!");
+        return;
+    }
+
+    fwrite(&emp, sizeof(struct Employee), 1, file);
+    fclose(file);
+}
+
+void displayAllEmployees() {
+    FILE *file = fopen(FILENAME, "rb");
+    if (file == NULL) {
+        printf("Error in opening file!");
+        return;
+    }
+
+    struct Employee emp;
+    while (fread(&emp, sizeof(struct Employee), 1, file)) {
+        printf("ID: %d, Name: %s, Salary: %.2f\n", emp.id, emp.name, emp.salary);
+    }
+    fclose(file);
+}
+
+void updateEmployeeSalary(int empId, float newSalary) {
+    FILE *file = fopen(FILENAME, "r+b");
+    if (file == NULL) {
+        printf("Error in opening file!");
+        return;
+    }
+
+    struct Employee emp;
+    while (fread(&emp, sizeof(struct Employee), 1, file)) {
+        if (emp.id == empId) {
+            emp.salary = newSalary;
+            fseek(file, -sizeof(struct Employee), SEEK_CUR);
+            fwrite(&emp, sizeof(struct Employee), 1, file);
+            break;
+        }
+    }
+    fclose(file);
+}
+
+int main() {
+    struct Employee emp1 = {1, "John Doe", 5000};
+    struct Employee emp2 = {2, "Jane Smith", 6000};
+    
+    writeEmployeeToFile(emp1);
+    writeEmployeeToFile(emp2);
+
+    printf("Initial Employee Details:\n");
+    displayAllEmployees();
+
+    updateEmployeeSalary(1, 5500);
+
+    printf("\nEmployee Details After Salary Update:\n");
+    displayAllEmployees();
+
+    return 0;
+}

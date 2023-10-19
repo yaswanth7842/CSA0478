@@ -1,0 +1,70 @@
+#include <stdio.h>
+
+#define MAX_FRAMES 3 // Maximum number of frames in memory
+#define MAX_PAGES 20 // Maximum number of pages
+
+// Function to check if the page is already present in the frame
+int isPagePresent(int page, int frames[], int frame_count) {
+    for (int i = 0; i < frame_count; i++) {
+        if (frames[i] == page) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+// Function to display the current state of frames
+void displayFrames(int frames[], int frame_count) {
+    for (int i = 0; i < frame_count; i++) {
+        if (frames[i] == -1) {
+            printf("X ");
+        } else {
+            printf("%d ", frames[i]);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int pages[MAX_PAGES]; // Array to store reference string
+    int frames[MAX_FRAMES]; // Array to store frames
+    int page_faults = 0; // Counter for page faults
+    int frame_count = 0; // Counter for the current number of frames filled
+
+    // Initializing frames with -1 to indicate they are empty
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        frames[i] = -1;
+    }
+
+    // Accepting input for reference string
+    printf("Enter the reference string (maximum 20 pages): ");
+    for (int i = 0; i < MAX_PAGES; i++) {
+        scanf("%d", &pages[i]);
+        if (pages[i] == -1) {
+            break;
+        }
+    }
+
+    // Simulating FIFO page replacement algorithm
+    printf("\nFIFO Page Replacement Algorithm Simulation:\n");
+    for (int i = 0; i < MAX_PAGES; i++) {
+        int currentPage = pages[i];
+        if (!isPagePresent(currentPage, frames, frame_count)) {
+            if (frame_count < MAX_FRAMES) {
+                frames[frame_count] = currentPage;
+                frame_count++;
+            } else {
+                for (int j = 0; j < MAX_FRAMES - 1; j++) {
+                    frames[j] = frames[j + 1];
+                }
+                frames[MAX_FRAMES - 1] = currentPage;
+            }
+            page_faults++;
+        }
+        printf("Reference String: %d | ", currentPage);
+        displayFrames(frames, frame_count);
+    }
+
+    printf("\nTotal page faults: %d\n", page_faults);
+    return 0;
+}

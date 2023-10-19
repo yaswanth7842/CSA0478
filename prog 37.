@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to calculate the total head movement
+int FCFS(int arr[], int head, int size)
+{
+    int total_movement = 0;
+
+    // Loop to calculate the total head movement
+    for (int i = 0; i < size; i++) {
+        total_movement += abs(arr[i] - head);
+        head = arr[i]; // move the head to the next position
+    }
+
+    return total_movement;
+}
+
+int main()
+{
+    int n, head;
+    printf("Enter the number of disk locations: ");
+    scanf("%d", &n);
+
+    int requests[n];
+    printf("Enter the disk positions:\n");
+
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &requests[i]);
+    }
+
+    printf("Enter the initial head position: ");
+    scanf("%d", &head);
+
+    // Call the FCFS function to get the total head movement
+    int total_head_movement = FCFS(requests, head, n);
+
+    printf("Total head movement = %d\n", total_head_movement);
+
+    return 0;
+}

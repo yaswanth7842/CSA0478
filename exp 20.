@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+#define MAX_READERS 5
+
+sem_t resourceAccess, readCountAccess, serviceQueue;
+int readCount = 0;
+
+void *writer(void *arg) {
+    sem_wait(&serviceQueue);
+    sem_wait(&resourceAccess);
+    printf("Writing data...\n");
+    sleep(1); // Simulating the writing process
+    sem_post(&resourceAccess);
+    sem_post(&serviceQueue);
+    printf("Data written.\n");
+    return NULL;
+}
+
+void *reader(void *arg) {
+    sem_wait(&serviceQueue);
+    sem_wait(&readCountAccess);
+    readCount++;
+    if (readCount == 1) {
+        sem_wait(&resourceAccess);
+    }
+    sem_post(&readCountAccess);
+    sem_post(&serviceQueue);
+
+    printf("Reading data...\n");
+    sleep(1); // Simulating the reading process
+
+    sem_wait(&readCountAccess);
+    readCount--;
+    if (readCount == 0) {
+        sem_post(&resourceAccess);
+    }
+    sem_post(&readCountAccess);
+
+    printf("Data read.\n");
+    return NULL;
+}
+
+int main() {
+    pthread_t readers[MAX_READERS], writerThread;
+    int i;
+
+    sem_init(&resourceAccess, 0, 1);
+    sem_init(&readCountAccess, 0, 1);
+    sem_init(&serviceQueue, 0, 1);
+
+    for (i = 0; i < MAX_READERS; i++) {
+        pthread_create(&readers[i], NULL, reader, NULL);
+    }
+
+    pthread_create(&writerThread, NULL, writer, NULL);
+
+    for (i = 0; i < MAX_READERS; i++) {
+        pthread_join(readers[i], NULL);
+    }
+
+    pthread_join(writerThread, NULL);
+
+    sem_destroy(&resourceAccess);
+    sem_destroy(&readCountAccess);
+    sem_destroy(&serviceQueue);
+
+    return 0;
+}

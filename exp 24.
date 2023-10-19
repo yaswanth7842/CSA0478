@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE 1024
+
+int main() {
+    // Create a file
+    int fileDescriptor = open("example.txt", O_CREAT | O_RDWR, 0666);
+    if (fileDescriptor == -1) {
+        perror("Error creating the file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Write to the file
+    char *message = "This is an example text.\n";
+    if (write(fileDescriptor, message, strlen(message)) == -1) {
+        perror("Error writing to the file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Close the file
+    if (close(fileDescriptor) == -1) {
+        perror("Error closing the file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Open the file again for reading
+    fileDescriptor = open("example.txt", O_RDONLY);
+    if (fileDescriptor == -1) {
+        perror("Error opening the file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Read from the file
+    char buffer[BUFFER_SIZE];
+    int bytesRead = read(fileDescriptor, buffer, BUFFER_SIZE);
+    if (bytesRead == -1) {
+        perror("Error reading from the file");
+        exit(EXIT_FAILURE);
+    }
+
+    buffer[bytesRead] = '\0'; // Null terminate the buffer
+
+    // Display the read content
+    printf("Read from the file: %s", buffer);
+
+    // Close the file
+    if (close(fileDescriptor) == -1) {
+        perror("Error closing the file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Delete the file
+    if (unlink("example.txt") == -1) {
+        perror("Error deleting the file");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("File management operations executed successfully.\n");
+
+    return 0;
+}

@@ -1,0 +1,86 @@
+#include <stdio.h>
+
+#define MAX_FRAMES 3
+#define MAX_PAGES 10
+
+int frames[MAX_FRAMES];
+int pages[MAX_PAGES];
+int pageFaults = 0;
+
+void initializeFrames() {
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        frames[i] = -1;
+    }
+}
+
+void printFrames() {
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        if (frames[i] != -1) {
+            printf("%d ", frames[i]);
+        } else {
+            printf("- ");
+        }
+    }
+    printf("\n");
+}
+
+int isPageInFrames(int page) {
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        if (frames[i] == page) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int getIndexOfPage(int page) {
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        if (frames[i] == page) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void LRU(int page) {
+    if (!isPageInFrames(page)) {
+        int emptyIndex = -1;
+        for (int i = 0; i < MAX_FRAMES; i++) {
+            if (frames[i] == -1) {
+                emptyIndex = i;
+                break;
+            }
+        }
+        if (emptyIndex != -1) {
+            frames[emptyIndex] = page;
+        } else {
+            int leastRecentlyUsedIndex = 0;
+            for (int i = 1; i < MAX_FRAMES; i++) {
+                if (getIndexOfPage(frames[i]) < getIndexOfPage(frames[leastRecentlyUsedIndex])) {
+                    leastRecentlyUsedIndex = i;
+                }
+            }
+            frames[leastRecentlyUsedIndex] = page;
+        }
+        pageFaults++;
+    }
+}
+
+int main() {
+    printf("Enter the page reference string: ");
+    for (int i = 0; i < MAX_PAGES; i++) {
+        scanf("%d", &pages[i]);
+    }
+
+    initializeFrames();
+    printf("\nLRU Simulation:\n");
+
+    for (int i = 0; i < MAX_PAGES; i++) {
+        LRU(pages[i]);
+        printf("Page reference: %d - Frames: ", pages[i]);
+        printFrames();
+    }
+
+    printf("\nTotal page faults: %d\n", pageFaults);
+    return 0;
+}

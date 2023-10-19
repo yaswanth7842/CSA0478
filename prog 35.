@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_BLOCKS 100
+
+// Function to simulate the file allocation strategy
+void simulateFileAllocation(int indexBlock[], int n) {
+    printf("Index Block Contents:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Index Block Entry %d: %d\n", i, indexBlock[i]);
+    }
+}
+
+int main() {
+    int indexBlock[MAX_BLOCKS];
+    int n; // number of entries in the index block
+
+    // Get the number of entries in the index block from the user
+    printf("Enter the number of entries in the index block: ");
+    scanf("%d", &n);
+
+    // Get the index block entries from the user
+    printf("Enter the index block entries:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Entry %d: ", i);
+        scanf("%d", &indexBlock[i]);
+    }
+
+    // Simulate the file allocation strategy
+    simulateFileAllocation(indexBlock, n);
+
+    return 0;
+}

@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_RECORDS 100
+
+// Structure to represent a record
+struct Record {
+    int data;
+};
+
+// Function to add a new record to the file system
+void addRecord(struct Record fileSystem[], int *currentIndex, int newData) {
+    if (*currentIndex < MAX_RECORDS) {
+        struct Record newRecord;
+        newRecord.data = newData;
+        fileSystem[*currentIndex] = newRecord;
+        (*currentIndex)++;
+        printf("Record added successfully.\n");
+    } else {
+        printf("File system is full. Cannot add more records.\n");
+    }
+}
+
+// Function to read all the records
+void readRecords(struct Record fileSystem[], int currentIndex) {
+    printf("Reading all records:\n");
+    for (int i = 0; i < currentIndex; i++) {
+        printf("Record %d: %d\n", i + 1, fileSystem[i].data);
+    }
+}
+
+int main() {
+    struct Record fileSystem[MAX_RECORDS];
+    int currentIndex = 0;
+    int option, newData;
+
+    while (1) {
+        printf("\nFile Allocation Strategy Simulation\n");
+        printf("1. Add a new record\n");
+        printf("2. Read all records\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &option);
+
+        switch (option) {
+            case 1:
+                printf("Enter data for the new record: ");
+                scanf("%d", &newData);
+                addRecord(fileSystem, &currentIndex, newData);
+                break;
+            case 2:
+                readRecords(fileSystem, currentIndex);
+                break;
+            case 3:
+                printf("Exiting program.\n");
+                exit(0);
+            default:
+                printf("Invalid option. Please try again.\n");
+        }
+    }
+
+    return 0;
+}

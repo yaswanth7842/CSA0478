@@ -1,0 +1,61 @@
+#include <stdio.h>
+
+#define MAX_MEMORY_SIZE 100
+
+struct Block {
+    int blockSize;
+    int processID;
+};
+
+struct Block memory[MAX_MEMORY_SIZE];
+
+void initializeMemory() {
+    for (int i = 0; i < MAX_MEMORY_SIZE; i++) {
+        memory[i].blockSize = 0;
+        memory[i].processID = -1;
+    }
+}
+
+void displayMemory() {
+    printf("Memory Status:\n");
+    for (int i = 0; i < MAX_MEMORY_SIZE; i++) {
+        printf("[%d:%d] ", memory[i].blockSize, memory[i].processID);
+    }
+    printf("\n");
+}
+
+void firstFit(int processID, int requiredBlockSize) {
+    int i;
+    for (i = 0; i < MAX_MEMORY_SIZE; i++) {
+        if (memory[i].blockSize >= requiredBlockSize && memory[i].processID == -1) {
+            memory[i].processID = processID;
+            break;
+        }
+    }
+    if (i == MAX_MEMORY_SIZE) {
+        printf("Memory Full: Cannot allocate block for Process %d\n", processID);
+    }
+}
+
+int main() {
+    initializeMemory();
+    displayMemory();
+
+    // Allocating Blocks for Processes
+    firstFit(1, 20);
+    displayMemory();
+
+    firstFit(2, 30);
+    displayMemory();
+
+    firstFit(3, 10);
+    displayMemory();
+
+    firstFit(4, 25);
+    displayMemory();
+
+    firstFit(5, 15);
+    displayMemory();
+
+    return 0;
+}

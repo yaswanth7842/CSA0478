@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to sort the requests
+void sort(int *arr, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (arr[i] > arr[j]) {
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+}
+
+// Function to find the index of the disk head
+int findPosition(int *arr, int n, int head) {
+    for (int i = 0; i < n; i++) {
+        if (arr[i] > head) {
+            return i;
+        }
+    }
+    return n;
+}
+
+// Function to simulate the C-SCAN algorithm
+void CSCAN(int *arr, int n, int head, int disk_size) {
+    int seek_count = 0;
+    int distance, current = 0;
+
+    sort(arr, n);
+
+    // Finding the position of the head
+    current = findPosition(arr, n, head);
+
+    // Traversing right first
+    printf("Seek Sequence is: ");
+    for (int i = current; i < n; i++) {
+        printf("%d ", arr[i]);
+        distance = abs(arr[i] - head);
+        seek_count += distance;
+        head = arr[i];
+    }
+
+    // Moving to the end
+    seek_count += abs(disk_size - head);
+    head = 0;
+    printf("%d ", disk_size);
+
+    // Traversing left
+    for (int i = 0; i < current; i++) {
+        printf("%d ", arr[i]);
+        distance = abs(arr[i] - head);
+        seek_count += distance;
+        head = arr[i];
+    }
+
+    printf("\nTotal seek count is: %d\n", seek_count);
+}
+
+// Main function
+int main() {
+    int n, head, disk_size;
+
+    printf("Enter the size of the disk: ");
+    scanf("%d", &disk_size);
+
+    printf("Enter the number of requests: ");
+    scanf("%d", &n);
+
+    int arr[n];
+    printf("Enter the requests: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    printf("Enter the initial position of the disk head: ");
+    scanf("%d", &head);
+
+    CSCAN(arr, n, head, disk_size);
+
+    return 0;
+}
